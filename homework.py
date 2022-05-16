@@ -7,6 +7,7 @@ import telegram
 from dotenv import load_dotenv
 from telegram.ext import Updater
 from http import HTTPStatus
+from settings import RETRY_TIME, ENDPOINT, HEADERS, HOMEWORK_STATUSES
 
 load_dotenv()
 
@@ -14,16 +15,7 @@ load_dotenv()
 PRACTICUM_TOKEN = os.getenv('TOKEN_P')
 TELEGRAM_TOKEN = os.getenv('TOKEN_T')
 TELEGRAM_CHAT_ID = os.getenv('CHAT_ID')
-RETRY_TIME = 600
-ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
-HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
-
-HOMEWORK_STATUSES = {
-    'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
-    'reviewing': 'Работа взята на проверку ревьюером.',
-    'rejected': 'Работа проверена: у ревьюера есть замечания.'
-}
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -50,6 +42,8 @@ def get_api_answer(current_timestamp):
             params=params
         )
     except ValueError as error:
+        #  Прошу прощения не понял этот комментарий
+        # (except exceptions.SendMessageFailure:)
         logging.error(f'Функция get_api_answer, ошибка {error}.')
         raise error
     get_api_answer_error = (
@@ -121,7 +115,6 @@ def check_tokens():
 def main():
     """Основная логика работы бота."""
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
-    #  current_timestamp = 0
     current_timestamp = 1650130498
     error_message = ''
     while True:
@@ -133,20 +126,19 @@ def main():
             current_timestamp = response.get('current_date', current_timestamp)
             if result_check_response:
                 send_message(bot, parse_status(result_check_response))
-            time.sleep(RETRY_TIME)
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             if message not in error_message:
                 error_message = message
                 logging.critical(message)
                 send_message(bot, message)
-            #  logging.error(message)
+        finally:
             time.sleep(RETRY_TIME)
-        else:
-            send_message(bot, message)
-            updater = Updater(token=TELEGRAM_TOKEN)
-            updater.start_polling(poll_interval=RETRY_TIME)
-            updater.idle()
+
+        send_message(bot, message)
+        updater = Updater(token=TELEGRAM_TOKEN)
+        updater.start_polling(poll_interval=RETRY_TIME)
+        updater.idle()
 
 
 if __name__ == '__main__':
