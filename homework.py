@@ -108,8 +108,8 @@ def parse_status(homework):
 
 
 def check_tokens():
-    """Проверяем доступность переменных окружения,
-    которые необходимы для работы программы.
+    """Проверяем доступность переменных окружения.
+    Переменные необходимы для работы программы.
     """
     if PRACTICUM_TOKEN and TELEGRAM_TOKEN and TELEGRAM_CHAT_ID is not None:
         logging.info('Функция check_tokens, переменные окружения доступны.')
@@ -119,8 +119,7 @@ def check_tokens():
 
 
 def main():
-    """Основная логика работы бота.
-    """
+    """Основная логика работы бота."""
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     #  current_timestamp = 0
     current_timestamp = 1650130498
