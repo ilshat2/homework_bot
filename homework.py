@@ -14,13 +14,6 @@ load_dotenv()
 PRACTICUM_TOKEN = os.getenv('TOKEN_P')
 TELEGRAM_TOKEN = os.getenv('TOKEN_T')
 TELEGRAM_CHAT_ID = os.getenv('CHAT_ID')
-print('ТОКЕНЫЫЫЫЫЫЫЫЫЫЫЫ')
-print(PRACTICUM_TOKEN)
-print(TELEGRAM_TOKEN)
-print(TELEGRAM_CHAT_ID)
-print('----------------')
-print()
-
 RETRY_TIME = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
@@ -48,7 +41,6 @@ def send_message(bot, message):
 def get_api_answer(current_timestamp):
     """Делаем запрос к единственному эндпоинту API-сервиса."""
     timestamp = current_timestamp or int(time.time())
-    #  timestamp = current_timestamp
     params = {'from_date': timestamp}
     try:
         logging.info('Функция get_api_answer, отправляем api-запрос.')
@@ -60,11 +52,6 @@ def get_api_answer(current_timestamp):
     except ValueError as error:
         logging.error(f'Функция get_api_answer, ошибка {error}.')
         raise error
-    print('ФУНКЦИЯ get_api_answer')
-    print(answer_homework)
-    print(timestamp)
-    print('----------------')
-    print()
     get_api_answer_error = (
         f'Функция get_api_answer, ошибка {answer_homework.status_code}.'
     )
@@ -79,23 +66,16 @@ def check_response(response):
     logging.info(
         'Функция check_response, проверяем ответ API на корректность.'
     )
-    print('ФУНКЦИЯ check_response')
     try:
         response = response['homeworks']
-        print('1', response)
     except KeyError:
         logging.error('Функция check_response, неверный ключ.')
         response = None
     try:
         response = response[0]
-        print('2', response)
     except IndexError:
         logging.error('Функция check_response, неверный индекс.')
         response = None
-    print('3', response)
-    print(type(response))
-    print('----------------')
-    print()
     if type(response) == dict:
         return response
     logging.error('Функция check_response, неверный тип возвращаемых данных.')
@@ -107,8 +87,6 @@ def parse_status(homework):
     logging.info(
         'Функция parse_status, извлекли информацию о конкретной работе.'
     )
-
-    #  homework = homework[0]
     try:
         homework_name = homework['homework_name']
         homework_status = homework['status']
@@ -146,11 +124,6 @@ def main():
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     #  current_timestamp = 0
     current_timestamp = 1650130498
-    check_tokens()
-    print('ФУНКЦИЯ main')
-    print(check_tokens())
-    print('----------------')
-    print()
     error_message = ''
     while True:
         try:

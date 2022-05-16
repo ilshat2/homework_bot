@@ -121,3 +121,14 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
+    print('ФУНКЦИЯ parse_status')
+    print(homework)
+    print(homework_name)
+    print(homework_status)
+    print(verdict)
+    print('----------------')
+    print()
